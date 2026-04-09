@@ -2,224 +2,513 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>炭大錢水電材料行</title>
 <style>
-body { font-family: Arial; margin:0; background:#f5f5f5; }
-header { background:#2c3e50; color:#fff; padding:15px; text-align:center; }
-nav { background:#34495e; padding:10px; text-align:center; }
-nav button { margin:5px; padding:10px; border:none; cursor:pointer; }
-.container { padding:20px; }
-.card { background:#fff; padding:15px; margin:10px; border-radius:10px; display:inline-block; width:200px; }
-button { background:#3498db; color:#fff; border:none; padding:5px 10px; cursor:pointer; }
-.cart-item { margin:10px 0; }
-.hidden { display:none; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Microsoft JhengHei", sans-serif;
+  background: #f8f9fa;
+  line-height: 1.5;
+}
+
+header {
+  background: #ff6f00;
+  color: white;
+  padding: 16px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.btn-admin {
+  background: white;
+  color: #ff6f00;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.main {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.products {
+  flex: 3;
+  min-width: 320px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #eee;
+}
+
+.card h3 {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.card .price {
+  color: #ff4400;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.card button {
+  background: #ff6f00;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.cart {
+  flex: 1;
+  min-width: 300px;
+  background: white;
+  padding: 20px;
+  border-left: 1px solid #eee;
+}
+
+.cart h2 {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cart-qty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cart-qty button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.total {
+  text-align: right;
+  margin: 16px 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #d93025;
+}
+
+.btn-checkout {
+  width: 100%;
+  background: #26a69a;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.admin {
+  background: #fff8e1;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+.admin input {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.admin button {
+  background: #ff6f00;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.admin-item {
+  background: white;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.checkout, .done {
+  max-width: 500px;
+  margin: 40px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.checkout input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.checkout button {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background: #26a69a;
+  color: white;
+}
+
+.btn-back {
+  background: #f0f0f0;
+}
+
+.done {
+  text-align: center;
+}
+
+.done button {
+  background: #ff6f00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>炭大錢水電材料行</h1>
+  <h1>炭大錢水電材料行 🛠</h1>
+  <button class="btn-admin" onclick="toggleAdmin()">⚙ 管理後台</button>
 </header>
 
-<nav>
-<button onclick="showPage('shop')">前台商店</button>
-<button onclick="showPage('cart')">購物車</button>
-<button onclick="showPage('admin')">後台管理</button>
-</nav>
+<!-- 後台 -->
+<div class="admin hidden" id="adminPanel">
+  <h2>📦 商品管理</h2>
+  <input id="pname" placeholder="商品名稱">
+  <input id="pprice" placeholder="價格（數字）">
+  <input id="pimg" placeholder="圖片網址 URL">
+  <button onclick="addProduct()">✅ 新增商品</button>
 
-<div class="container">
-
-<!-- 商店 -->
-<div id="shop">
-<h2>商品列表</h2>
-<div id="productList"></div>
+  <hr style="margin:20px 0">
+  <h3>📋 商品清單</h3>
+  <div id="adminList"></div>
 </div>
 
-<!-- 購物車 -->
-<div id="cart" class="hidden">
-<h2>購物車</h2>
-<div id="cartItems"></div>
-<h3 id="total"></h3>
-<button onclick="checkout()">前往結帳</button>
+<!-- 商店頁 -->
+<div id="shopPage" class="main">
+  <div class="products" id="productList"></div>
+
+  <div class="cart">
+    <h2>🛒 購物車</h2>
+    <div id="cartItems"></div>
+    <div class="total" id="total"></div>
+    <button class="btn-checkout" onclick="goCheckout()">👉 前往結帳</button>
+  </div>
 </div>
 
 <!-- 結帳 -->
-<div id="checkoutPage" class="hidden">
-<h2>結帳</h2>
-<input id="name" placeholder="姓名"><br><br>
-<input id="phone" placeholder="電話"><br><br>
-<input id="address" placeholder="地址"><br><br>
-<button onclick="placeOrder()">送出訂單</button>
+<div id="checkoutPage" class="checkout hidden">
+  <h2>🧾 填寫訂單資料</h2>
+  <input id="name" placeholder="收件人姓名">
+  <input id="phone" placeholder="連絡電話">
+  <input id="address" placeholder="寄送地址">
+  <button class="btn-submit" onclick="submitOrder()">✅ 送出訂單</button>
+  <button class="btn-back" onclick="back()">🔙 返回購物車</button>
 </div>
 
-<!-- 訂單完成 -->
-<div id="orderPage" class="hidden">
-<h2>訂單完成 🎉</h2>
-<div id="orderInfo"></div>
-</div>
-
-<!-- 後台 -->
-<div id="admin" class="hidden">
-<h2>後台管理</h2>
-
-<input id="pname" placeholder="商品名稱">
-<input id="pprice" placeholder="價格" type="number">
-<button onclick="addProduct()">新增商品</button>
-
-<h3>商品管理</h3>
-<div id="adminList"></div>
-</div>
-
+<!-- 完成 -->
+<div id="donePage" class="done hidden">
+  <h2>🎉 訂單已送出</h2>
+  <div id="orderInfo" style="margin:20px 0; text-align:left;"></div>
+  <button onclick="restart()">🏠 回首頁</button>
 </div>
 
 <script>
-let products = JSON.parse(localStorage.getItem('products')) || [
-  {id:1, name:"螺絲起子", price:100},
-  {id:2, name:"活動扳手", price:250}
+// 初始化資料
+let products = JSON.parse(localStorage.getItem("products")) || [
+  { name: "螺絲起子", price: 100, img: "https://picsum.photos/200?1" },
+  { name: "活動扳手", price: 250, img: "https://picsum.photos/200?2" }
 ];
 
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-function save() {
-  localStorage.setItem('products', JSON.stringify(products));
-  localStorage.setItem('cart', JSON.stringify(cart));
+// 儲存到本地
+function saveAll() {
+  localStorage.setItem("products", JSON.stringify(products));
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function showPage(page) {
-  document.querySelectorAll('.container > div').forEach(d=>d.classList.add('hidden'));
-  document.getElementById(page).classList.remove('hidden');
-  render();
+// 金額千分位格式化
+function formatMoney(num) {
+  return parseInt(num).toLocaleString() + " 元";
 }
 
-function render() {
+// ==================== 商品前台 ====================
+function renderProducts() {
+  let html = "";
+  products.forEach((p, i) => {
+    html += `
+      <div class="card">
+        <img src="${p.img}" alt="${p.name}" onerror="this.src='https://picsum.photos/200?error'">
+        <h3>${p.name}</h3>
+        <div class="price">${formatMoney(p.price)}</div>
+        <button onclick="addToCart(${i})">加入購物車</button>
+      </div>`;
+  });
+  document.getElementById("productList").innerHTML = html;
+}
+
+// ==================== 後台 ====================
+function renderAdmin() {
+  let html = "";
+  products.forEach((p, i) => {
+    html += `
+      <div class="admin-item">
+        <img src="${p.img}" onerror="this.src='https://picsum.photos/200?error'">
+        <input style="flex:1" value="${p.name}" onchange="editProduct(${i},'name',this.value)">
+        <input style="flex:1" value="${p.price}" onchange="editProduct(${i},'price',this.value)">
+        <input style="flex:1.5" value="${p.img}" onchange="editProduct(${i},'img',this.value)">
+        <button onclick="deleteProduct(${i})">🗑 刪除</button>
+      </div>`;
+  });
+  document.getElementById("adminList").innerHTML = html;
+}
+
+// 新增商品
+function addProduct() {
+  const name = document.getElementById("pname").value.trim();
+  const price = parseInt(document.getElementById("pprice").value);
+  const img = document.getElementById("pimg").value.trim();
+
+  if (!name || !price || !img) {
+    alert("請填寫完整商品資訊");
+    return;
+  }
+
+  products.push({ name, price, img });
+  saveAll();
   renderProducts();
-  renderCart();
+  renderAdmin();
+
+  // 清空輸入框
+  document.getElementById("pname").value = "";
+  document.getElementById("pprice").value = "";
+  document.getElementById("pimg").value = "";
+  alert("✅ 商品新增完成");
+}
+
+// 修改商品
+function editProduct(index, field, value) {
+  if (field === "price") value = parseInt(value) || 0;
+  products[index][field] = value;
+  saveAll();
+  renderProducts();
+}
+
+// 刪除商品
+function deleteProduct(index) {
+  if (!confirm("確定要刪除這個商品嗎？")) return;
+  products.splice(index, 1);
+  saveAll();
+  renderProducts();
   renderAdmin();
 }
 
-function renderProducts() {
-  let html="";
-  products.forEach(p=>{
-    html+=`
-    <div class="card">
-      <h3>${p.name}</h3>
-      <p>${p.price} 元</p>
-      <button onclick="addToCart(${p.id})">加入購物車</button>
-    </div>`;
-  });
-  document.getElementById('productList').innerHTML=html;
-}
+// ==================== 購物車 ====================
+function addToCart(index) {
+  const product = products[index];
+  const found = cart.find(item => item.name === product.name);
 
-function addToCart(id){
-  let item=cart.find(c=>c.id==id);
-  if(item){item.qty++}
-  else{cart.push({id, qty:1})}
-  save();
-  alert("已加入購物車");
-}
-
-function renderCart(){
-  let html="";
-  let total=0;
-
-  cart.forEach(c=>{
-    let p=products.find(p=>p.id==c.id);
-    total+=p.price*c.qty;
-    html+=`
-    <div class="cart-item">
-      ${p.name} ${p.price}元
-      <button onclick="changeQty(${c.id},-1)">-</button>
-      ${c.qty}
-      <button onclick="changeQty(${c.id},1)">+</button>
-      <button onclick="removeItem(${c.id})">刪除</button>
-    </div>`;
-  });
-
-  document.getElementById('cartItems').innerHTML=html;
-  document.getElementById('total').innerText="總金額："+total+" 元";
-}
-
-function changeQty(id,delta){
-  let item=cart.find(c=>c.id==id);
-  item.qty+=delta;
-  if(item.qty<=0) cart=cart.filter(c=>c.id!=id);
-  save();
-  renderCart();
-}
-
-function removeItem(id){
-  cart=cart.filter(c=>c.id!=id);
-  save();
-  renderCart();
-}
-
-function checkout(){
-  showPage('checkoutPage');
-}
-
-function placeOrder(){
-  let name=document.getElementById('name').value;
-  let phone=document.getElementById('phone').value;
-  let address=document.getElementById('address').value;
-
-  let order="姓名："+name+"<br>電話："+phone+"<br>地址："+address+"<br><br>商品：<br>";
-
-  cart.forEach(c=>{
-    let p=products.find(p=>p.id==c.id);
-    order+=p.name+" x "+c.qty+"<br>";
-  });
-
-  document.getElementById('orderInfo').innerHTML=order;
-
-  cart=[];
-  save();
-  showPage('orderPage');
-}
-
-function addProduct(){
-  let name=document.getElementById('pname').value;
-  let price=parseInt(document.getElementById('pprice').value);
-
-  if(!name || !price) return alert("請填完整");
-
-  products.push({id:Date.now(), name, price});
-  save();
-  render();
-}
-
-function renderAdmin(){
-  let html="";
-  products.forEach(p=>{
-    html+=`
-    <div>
-      ${p.name} - ${p.price}元
-      <button onclick="editProduct(${p.id})">修改</button>
-      <button onclick="deleteProduct(${p.id})">刪除</button>
-    </div>`;
-  });
-  document.getElementById('adminList').innerHTML=html;
-}
-
-function deleteProduct(id){
-  products=products.filter(p=>p.id!=id);
-  save();
-  render();
-}
-
-function editProduct(id){
-  let p=products.find(p=>p.id==id);
-  let name=prompt("新名稱",p.name);
-  let price=prompt("新價格",p.price);
-  if(name && price){
-    p.name=name;
-    p.price=parseInt(price);
-    save();
-    render();
+  if (found) {
+    found.qty++;
+  } else {
+    cart.push({
+      name: product.name,
+      price: product.price,
+      qty: 1
+    });
   }
+
+  saveAll();
+  renderCart();
 }
 
-render();
+// 調整數量
+function changeQty(index, delta) {
+  cart[index].qty += delta;
+  if (cart[index].qty <= 0) cart.splice(index, 1);
+  saveAll();
+  renderCart();
+}
+
+// 顯示購物車
+function renderCart() {
+  let html = "";
+  let total = 0;
+
+  cart.forEach((item, i) => {
+    const subtotal = item.price * item.qty;
+    total += subtotal;
+
+    html += `
+      <div class="cart-item">
+        <div>${item.name}</div>
+        <div class="cart-qty">
+          <button onclick="changeQty(${i},-1)">−</button>
+          <span>${item.qty}</span>
+          <button onclick="changeQty(${i},1)">+</button>
+        </div>
+        <div>${formatMoney(subtotal)}</div>
+      </div>`;
+  });
+
+  document.getElementById("cartItems").innerHTML = html;
+  document.getElementById("total").innerText = "合計：" + formatMoney(total);
+}
+
+// ==================== 結帳流程 ====================
+function goCheckout() {
+  if (cart.length === 0) {
+    alert("購物車沒有商品喔！");
+    return;
+  }
+  document.getElementById("shopPage").classList.add("hidden");
+  document.getElementById("checkoutPage").classList.remove("hidden");
+}
+
+function back() {
+  document.getElementById("checkoutPage").classList.add("hidden");
+  document.getElementById("shopPage").classList.remove("hidden");
+}
+
+// 送出訂單
+function submitOrder() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+
+  if (!name || !phone || !address) {
+    alert("請填寫完整訂購資料");
+    return;
+  }
+
+  const orderId = "TD" + Date.now();
+  let summary = "";
+  cart.forEach(i => {
+    summary += `${i.name} × ${i.qty}　小計：${formatMoney(i.price * i.qty)}<br>`;
+  });
+
+  document.getElementById("checkoutPage").classList.add("hidden");
+  document.getElementById("donePage").classList.remove("hidden");
+
+  document.getElementById("orderInfo").innerHTML = `
+    訂單編號：${orderId}<br><br>
+    姓名：${name}<br>
+    電話：${phone}<br>
+    地址：${address}<br><br>
+    購買項目：<br>${summary}
+  `;
+
+  // 清空購物車
+  cart = [];
+  saveAll();
+  renderCart();
+}
+
+function restart() {
+  document.getElementById("donePage").classList.add("hidden");
+  document.getElementById("shopPage").classList.remove("hidden");
+}
+
+// ==================== UI ====================
+function toggleAdmin() {
+  document.getElementById("adminPanel").classList.toggle("hidden");
+}
+
+// 初始化
+renderProducts();
+renderCart();
+renderAdmin();
 </script>
 
 </body>
