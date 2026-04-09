@@ -2,266 +2,224 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>炭大錢水電材料行</title>
-
 <style>
-body { margin:0; font-family:"Microsoft JhengHei"; background:#f0f2f5;}
-header { background:#ff6f00; color:white; padding:15px; text-align:center;}
-
-.main { display:flex; }
-.products {
-    flex:3;
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-    gap:15px;
-    padding:20px;
-}
-
-.card {
-    background:white;
-    padding:10px;
-    border-radius:10px;
-    text-align:center;
-}
-
-.card img { width:100%; height:150px; object-fit:cover; }
-
-.cart {
-    flex:1;
-    background:white;
-    padding:15px;
-    border-left:1px solid #ddd;
-}
-
+body { font-family: Arial; margin:0; background:#f5f5f5; }
+header { background:#2c3e50; color:#fff; padding:15px; text-align:center; }
+nav { background:#34495e; padding:10px; text-align:center; }
+nav button { margin:5px; padding:10px; border:none; cursor:pointer; }
+.container { padding:20px; }
+.card { background:#fff; padding:15px; margin:10px; border-radius:10px; display:inline-block; width:200px; }
+button { background:#3498db; color:#fff; border:none; padding:5px 10px; cursor:pointer; }
+.cart-item { margin:10px 0; }
 .hidden { display:none; }
-
-.admin {
-    padding:20px;
-    background:#fff3e0;
-}
-
-input { width:100%; padding:8px; margin:5px 0; }
-
-button { padding:6px 10px; cursor:pointer; margin:2px;}
 </style>
 </head>
 
 <body>
 
 <header>
-炭大錢水電材料行 🛠
-<button onclick="toggleAdmin()">⚙ 後台</button>
+<h1>炭大錢水電材料行</h1>
 </header>
 
-<!-- 後台 -->
-<div class="admin hidden" id="adminPanel">
-<h2>📦 商品管理</h2>
+<nav>
+<button onclick="showPage('shop')">前台商店</button>
+<button onclick="showPage('cart')">購物車</button>
+<button onclick="showPage('admin')">後台管理</button>
+</nav>
 
-<input id="pname" placeholder="商品名稱">
-<input id="pprice" placeholder="價格">
-<input id="pimg" placeholder="圖片URL">
-<button onclick="addProduct()">新增商品</button>
+<div class="container">
 
-<hr>
-
-<h3>📋 商品列表</h3>
-<div id="adminList"></div>
+<!-- 商店 -->
+<div id="shop">
+<h2>商品列表</h2>
+<div id="productList"></div>
 </div>
 
-<!-- 商店頁 -->
-<div id="shopPage" class="main">
-<div class="products" id="productList"></div>
-
-<div class="cart">
-<h2>🛒 購物車</h2>
+<!-- 購物車 -->
+<div id="cart" class="hidden">
+<h2>購物車</h2>
 <div id="cartItems"></div>
 <h3 id="total"></h3>
-<button onclick="goCheckout()">結帳</button>
-</div>
+<button onclick="checkout()">前往結帳</button>
 </div>
 
 <!-- 結帳 -->
-<div id="checkoutPage" class="hidden" style="padding:20px;">
-<h2>🧾 結帳</h2>
-<input id="name" placeholder="姓名">
-<input id="phone" placeholder="電話">
-<input id="address" placeholder="地址">
-<button onclick="submitOrder()">送出訂單</button>
-<button onclick="back()">返回</button>
+<div id="checkoutPage" class="hidden">
+<h2>結帳</h2>
+<input id="name" placeholder="姓名"><br><br>
+<input id="phone" placeholder="電話"><br><br>
+<input id="address" placeholder="地址"><br><br>
+<button onclick="placeOrder()">送出訂單</button>
 </div>
 
-<!-- 完成 -->
-<div id="donePage" class="hidden" style="padding:20px;">
-<h2>🎉 訂單完成</h2>
-<p id="orderInfo"></p>
-<button onclick="restart()">回首頁</button>
+<!-- 訂單完成 -->
+<div id="orderPage" class="hidden">
+<h2>訂單完成 🎉</h2>
+<div id="orderInfo"></div>
+</div>
+
+<!-- 後台 -->
+<div id="admin" class="hidden">
+<h2>後台管理</h2>
+
+<input id="pname" placeholder="商品名稱">
+<input id="pprice" placeholder="價格" type="number">
+<button onclick="addProduct()">新增商品</button>
+
+<h3>商品管理</h3>
+<div id="adminList"></div>
+</div>
+
 </div>
 
 <script>
-let products = JSON.parse(localStorage.getItem("products")) || [
-    {name:"螺絲起子",price:100,img:"https://picsum.photos/200?1"},
-    {name:"活動扳手",price:250,img:"https://picsum.photos/200?2"}
+let products = JSON.parse(localStorage.getItem('products')) || [
+  {id:1, name:"螺絲起子", price:100},
+  {id:2, name:"活動扳手", price:250}
 ];
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-function save(){
-    localStorage.setItem("products",JSON.stringify(products));
-    localStorage.setItem("cart",JSON.stringify(cart));
+function save() {
+  localStorage.setItem('products', JSON.stringify(products));
+  localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-/* ===== 商品顯示 ===== */
-function renderProducts(){
-    let html="";
-    products.forEach(p=>{
-        html+=`
-        <div class="card">
-            <img src="${p.img}">
-            <h3>${p.name}</h3>
-            <p>${p.price}元</p>
-            <button onclick="addToCart('${p.name}',${p.price})">加入購物車</button>
-        </div>`;
-    });
-    productList.innerHTML=html;
+function showPage(page) {
+  document.querySelectorAll('.container > div').forEach(d=>d.classList.add('hidden'));
+  document.getElementById(page).classList.remove('hidden');
+  render();
 }
 
-/* ===== 後台 ===== */
-function renderAdmin(){
-    let html="";
-    products.forEach((p,i)=>{
-        html+=`
-        <div style="margin:10px 0; padding:10px; background:#fff;">
-            <img src="${p.img}" width="50"><br>
-            <input value="${p.name}" onchange="editProduct(${i},'name',this.value)">
-            <input value="${p.price}" onchange="editProduct(${i},'price',this.value)">
-            <input value="${p.img}" onchange="editProduct(${i},'img',this.value)">
-            <button onclick="deleteProduct(${i})">🗑 刪除</button>
-        </div>`;
-    });
-    adminList.innerHTML=html;
+function render() {
+  renderProducts();
+  renderCart();
+  renderAdmin();
 }
 
-function addProduct(){
-    let name=pname.value;
-    let price=parseInt(pprice.value);
-    let img=pimg.value;
-
-    if(!name||!price||!img){
-        alert("請填完整");
-        return;
-    }
-
-    products.push({name,price,img});
-    save();
-    renderProducts();
-    renderAdmin();
+function renderProducts() {
+  let html="";
+  products.forEach(p=>{
+    html+=`
+    <div class="card">
+      <h3>${p.name}</h3>
+      <p>${p.price} 元</p>
+      <button onclick="addToCart(${p.id})">加入購物車</button>
+    </div>`;
+  });
+  document.getElementById('productList').innerHTML=html;
 }
 
-function editProduct(index,field,value){
-    if(field==="price") value=parseInt(value);
-    products[index][field]=value;
-    save();
-    renderProducts();
-    renderAdmin();
-}
-
-function deleteProduct(index){
-    if(confirm("確定刪除？")){
-        products.splice(index,1);
-        save();
-        renderProducts();
-        renderAdmin();
-    }
-}
-
-/* ===== 購物車 ===== */
-function addToCart(name,price){
-    let item=cart.find(i=>i.name===name);
-    if(item) item.qty++;
-    else cart.push({name,price,qty:1});
-    save();
-    renderCart();
-}
-
-function changeQty(i,d){
-    cart[i].qty+=d;
-    if(cart[i].qty<=0) cart.splice(i,1);
-    save();
-    renderCart();
+function addToCart(id){
+  let item=cart.find(c=>c.id==id);
+  if(item){item.qty++}
+  else{cart.push({id, qty:1})}
+  save();
+  alert("已加入購物車");
 }
 
 function renderCart(){
-    let html="";
-    let total=0;
+  let html="";
+  let total=0;
 
-    cart.forEach((item,i)=>{
-        total+=item.price*item.qty;
-        html+=`
-        <div>
-        ${item.name}
-        <button onclick="changeQty(${i},-1)">-</button>
-        ${item.qty}
-        <button onclick="changeQty(${i},1)">+</button>
-        </div>`;
-    });
+  cart.forEach(c=>{
+    let p=products.find(p=>p.id==c.id);
+    total+=p.price*c.qty;
+    html+=`
+    <div class="cart-item">
+      ${p.name} ${p.price}元
+      <button onclick="changeQty(${c.id},-1)">-</button>
+      ${c.qty}
+      <button onclick="changeQty(${c.id},1)">+</button>
+      <button onclick="removeItem(${c.id})">刪除</button>
+    </div>`;
+  });
 
-    cartItems.innerHTML=html;
-    document.getElementById("total").innerText="總金額："+total+"元";
+  document.getElementById('cartItems').innerHTML=html;
+  document.getElementById('total').innerText="總金額："+total+" 元";
 }
 
-/* ===== 結帳流程 ===== */
-function goCheckout(){
-    if(cart.length===0){ alert("購物車是空的"); return;}
-    shopPage.classList.add("hidden");
-    checkoutPage.classList.remove("hidden");
+function changeQty(id,delta){
+  let item=cart.find(c=>c.id==id);
+  item.qty+=delta;
+  if(item.qty<=0) cart=cart.filter(c=>c.id!=id);
+  save();
+  renderCart();
 }
 
-function back(){
-    checkoutPage.classList.add("hidden");
-    shopPage.classList.remove("hidden");
+function removeItem(id){
+  cart=cart.filter(c=>c.id!=id);
+  save();
+  renderCart();
 }
 
-function submitOrder(){
-    let name=document.getElementById("name").value;
-    let phone=document.getElementById("phone").value;
-    let address=document.getElementById("address").value;
+function checkout(){
+  showPage('checkoutPage');
+}
 
-    if(!name||!phone||!address){
-        alert("請填完整資料"); return;
-    }
+function placeOrder(){
+  let name=document.getElementById('name').value;
+  let phone=document.getElementById('phone').value;
+  let address=document.getElementById('address').value;
 
-    let orderId="TD"+Date.now();
-    let summary=cart.map(i=>`${i.name} x${i.qty}`).join("<br>");
+  let order="姓名："+name+"<br>電話："+phone+"<br>地址："+address+"<br><br>商品：<br>";
 
-    checkoutPage.classList.add("hidden");
-    donePage.classList.remove("hidden");
+  cart.forEach(c=>{
+    let p=products.find(p=>p.id==c.id);
+    order+=p.name+" x "+c.qty+"<br>";
+  });
 
-    orderInfo.innerHTML=`
-    訂單編號：${orderId}<br>
-    ${name}<br>${phone}<br>${address}<br><br>
-    ${summary}
-    `;
+  document.getElementById('orderInfo').innerHTML=order;
 
-    cart=[];
+  cart=[];
+  save();
+  showPage('orderPage');
+}
+
+function addProduct(){
+  let name=document.getElementById('pname').value;
+  let price=parseInt(document.getElementById('pprice').value);
+
+  if(!name || !price) return alert("請填完整");
+
+  products.push({id:Date.now(), name, price});
+  save();
+  render();
+}
+
+function renderAdmin(){
+  let html="";
+  products.forEach(p=>{
+    html+=`
+    <div>
+      ${p.name} - ${p.price}元
+      <button onclick="editProduct(${p.id})">修改</button>
+      <button onclick="deleteProduct(${p.id})">刪除</button>
+    </div>`;
+  });
+  document.getElementById('adminList').innerHTML=html;
+}
+
+function deleteProduct(id){
+  products=products.filter(p=>p.id!=id);
+  save();
+  render();
+}
+
+function editProduct(id){
+  let p=products.find(p=>p.id==id);
+  let name=prompt("新名稱",p.name);
+  let price=prompt("新價格",p.price);
+  if(name && price){
+    p.name=name;
+    p.price=parseInt(price);
     save();
-    renderCart();
+    render();
+  }
 }
 
-function restart(){
-    donePage.classList.add("hidden");
-    shopPage.classList.remove("hidden");
-}
-
-/* ===== UI ===== */
-function toggleAdmin(){
-    adminPanel.classList.toggle("hidden");
-}
-
-/* 初始化 */
-renderProducts();
-renderCart();
-renderAdmin();
+render();
 </script>
 
 </body>
